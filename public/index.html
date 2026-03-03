@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Video Downloader & Player</title>
+    <style>
+      body {
+        font-family: Arial;
+        text-align: center;
+        margin-top: 50px;
+      }
+      input {
+        width: 60%;
+        padding: 10px;
+        margin: 10px;
+      }
+      button {
+        padding: 10px 20px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      iframe {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎬 Video Downloader</h1>
+    <input
+      type="text"
+      id="downloadURL"
+      placeholder="Paste YouTube or Instagram reel URL here"
+    />
+    <button onclick="downloadVideo()">Download</button>
+
+    <hr />
+
+    <h1>🎬 Play YouTube Video</h1>
+    <input type="text" id="playURL" placeholder="Paste YouTube URL here" />
+    <button onclick="playVideo()">Play</button>
+
+    <div id="player"></div>
+
+    <script>
+      function downloadVideo() {
+        const url = document.getElementById("downloadURL").value.trim();
+
+        if (!url) {
+          alert("Enter a URL");
+          return;
+        }
+
+        window.open(
+          `http://localhost:5000/download?url=${encodeURIComponent(url)}`,
+        );
+      }
+
+      function playVideo() {
+        const url = document.getElementById("playURL").value.trim();
+
+        if (!url) {
+          alert("Enter a URL");
+          return;
+        }
+
+        const player = document.getElementById("player");
+
+        // 🎥 If direct MP4
+        if (
+          url.endsWith(".mp4") ||
+          url.endsWith(".webm") ||
+          url.endsWith(".ogg")
+        ) {
+          player.innerHTML = `
+        <video width="700" controls>
+          <source src="${url}" type="video/mp4">
+          Your browser does not support video tag.
+        </video>
+      `;
+          return;
+        }
+
+        // ▶️ If YouTube normal
+        if (url.includes("youtube.com")) {
+          const videoId = url.split("v=")[1]?.split("&")[0];
+
+          if (videoId) {
+            player.innerHTML = `
+          <iframe width="700" height="400"
+            src="https://www.youtube.com/embed/${videoId}"
+            frameborder="0"
+            allowfullscreen>
+          </iframe>
+        `;
+            return;
+          }
+        }
+
+        // ▶️ If YouTube short
+        if (url.includes("youtu.be")) {
+          const videoId = url.split("youtu.be/")[1]?.split("?")[0];
+
+          if (videoId) {
+            player.innerHTML = `
+          <iframe width="700" height="400"
+            src="https://www.youtube.com/embed/${videoId}"
+            frameborder="0"
+            allowfullscreen>
+          </iframe>
+        `;
+            return;
+          }
+        }
+
+        alert("This video URL cannot be played directly.");
+      }
+    </script>
+  </body>
+</html>
